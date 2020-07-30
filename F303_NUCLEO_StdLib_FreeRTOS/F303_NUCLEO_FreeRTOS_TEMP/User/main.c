@@ -1,10 +1,10 @@
 
+//using STM32F303 NUCLEO Board
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f30x.h"
 
 #include "FreeRTOS.h"
-#include "task.h"
 
 #include "bsp_led.h"
 #include "bsp_usart.h"
@@ -15,7 +15,6 @@ static void BSP_Init(void);
 int main(void)
 {
 	BSP_Init();
-
 
 }
 

@@ -4,15 +4,20 @@
 
 void Key_GPIO_Config(void)
 {		
-	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOC, ENABLE);
+	RCC_AHBPeriphClockCmd(KEY1_GPIO_CLK, ENABLE);
+	RCC_AHBPeriphClockCmd(KEY2_GPIO_CLK, ENABLE);
 	
 	GPIO_InitTypeDef GPIO_InitStruct;
-	
-	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_13;
+	//setting for KEY1
+	GPIO_InitStruct.GPIO_Pin = KEY1_GPIO_PIN;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN;
 	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	
-	GPIO_Init(GPIOC, &GPIO_InitStruct);
+	GPIO_Init(KEY1_GPIO_PORT, &GPIO_InitStruct);
+	//setting for KEY2
+	GPIO_InitStruct.GPIO_Pin = KEY2_GPIO_PIN;
+	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN;
+	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_Init(KEY2_GPIO_PORT, &GPIO_InitStruct);
 }
 
 uint8_t Key_Scan(GPIO_TypeDef* GPIOx,uint16_t GPIO_Pin)
