@@ -1,4 +1,5 @@
 
+
 #include "stm32f30x.h"
 
 #include "FreeRTOS.h"
@@ -8,37 +9,37 @@
 #include "bsp_usart.h"
 
 
- /* ´´½¨ÈÎÎñ¾ä±ú */
+ /* åˆ›å»ºä»»åŠ¡å¥æŸ„ */
 static TaskHandle_t AppTaskCreate_Handle = NULL;
-/* LEDÈÎÎñ¾ä±ú */
+/* LEDä»»åŠ¡å¥æŸ„ */
 static TaskHandle_t LED_Task_Handle = NULL;
-/* UARTÈÎÎñ¾ä±ú */
+/* UARTä»»åŠ¡å¥æŸ„ */
 static TaskHandle_t UART_Task_Handle = NULL;
 
 
-static void AppTaskCreate(void);/* ÓÃÓÚ´´½¨ÈÎÎñ */
-static void LED_Task(void* pvParameters);/* LED_TaskÈÎÎñÊµÏÖ */
-static void UART_Task(void* pvParameters);/* UART_TaskÈÎÎñÊµÏÖ */
-static void BSP_Init(void);/* ÓÃÓÚ³õÊ¼»¯°åÔØÏà¹Ø×ÊÔ´ */
+static void AppTaskCreate(void);/* ç”¨äºåˆ›å»ºä»»åŠ¡ */
+static void LED_Task(void* pvParameters);/* LED_Taskä»»åŠ¡å®ç° */
+static void UART_Task(void* pvParameters);/* UART_Taskä»»åŠ¡å®ç° */
+static void BSP_Init(void);/* ç”¨äºåˆå§‹åŒ–æ¿è½½ç›¸å…³èµ„æº */
 
 
 int main(void)
 {
-	BaseType_t xReturn = pdPASS;/* ¶¨ÒåÒ»¸ö´´½¨ĞÅÏ¢·µ»ØÖµ£¬Ä¬ÈÏÎªpdPASS */
+	BaseType_t xReturn = pdPASS;/* å®šä¹‰ä¸€ä¸ªåˆ›å»ºä¿¡æ¯è¿”å›å€¼ï¼Œé»˜è®¤ä¸ºpdPASS */
 
-  /* ¿ª·¢°åÓ²¼ş³õÊ¼»¯ */
+  /* å¼€å‘æ¿ç¡¬ä»¶åˆå§‹åŒ– */
   BSP_Init();
   
-   /* ´´½¨AppTaskCreateÈÎÎñ */
-  xReturn = xTaskCreate((TaskFunction_t )AppTaskCreate,  /* ÈÎÎñÈë¿Úº¯Êı */
-                        (const char*    )"AppTaskCreate",/* ÈÎÎñÃû×Ö */
-                        (uint16_t       )512,  /* ÈÎÎñÕ»´óĞ¡ */
-                        (void*          )NULL,/* ÈÎÎñÈë¿Úº¯Êı²ÎÊı */
-                        (UBaseType_t    )1, /* ÈÎÎñµÄÓÅÏÈ¼¶ */
-                        (TaskHandle_t*  )&AppTaskCreate_Handle);/* ÈÎÎñ¿ØÖÆ¿éÖ¸Õë */ 
-  /* Æô¶¯ÈÎÎñµ÷¶È */           
+   /* åˆ›å»ºAppTaskCreateä»»åŠ¡ */
+  xReturn = xTaskCreate((TaskFunction_t )AppTaskCreate,  /* ä»»åŠ¡å…¥å£å‡½æ•° */
+                        (const char*    )"AppTaskCreate",/* ä»»åŠ¡åå­— */
+                        (uint16_t       )512,  /* ä»»åŠ¡æ ˆå¤§å° */
+                        (void*          )NULL,/* ä»»åŠ¡å…¥å£å‡½æ•°å‚æ•° */
+                        (UBaseType_t    )1, /* ä»»åŠ¡çš„ä¼˜å…ˆçº§ */
+                        (TaskHandle_t*  )&AppTaskCreate_Handle);/* ä»»åŠ¡æ§åˆ¶å—æŒ‡é’ˆ */ 
+  /* å¯åŠ¨ä»»åŠ¡è°ƒåº¦ */           
   if(pdPASS == xReturn)
-    vTaskStartScheduler();   /* Æô¶¯ÈÎÎñ£¬¿ªÆôµ÷¶È */
+    vTaskStartScheduler();   /* å¯åŠ¨ä»»åŠ¡ï¼Œå¼€å¯è°ƒåº¦ */
   else
     return -1;  
 
@@ -55,45 +56,45 @@ static void BSP_Init(void)
 
 static void AppTaskCreate(void)
 {
-  BaseType_t xReturn = pdPASS;/* ¶¨ÒåÒ»¸ö´´½¨ĞÅÏ¢·µ»ØÖµ£¬Ä¬ÈÏÎªpdPASS */
+  BaseType_t xReturn = pdPASS;/* å®šä¹‰ä¸€ä¸ªåˆ›å»ºä¿¡æ¯è¿”å›å€¼ï¼Œé»˜è®¤ä¸ºpdPASS */
   
-  taskENTER_CRITICAL();           //½øÈëÁÙ½çÇø
+  taskENTER_CRITICAL();           //è¿›å…¥ä¸´ç•ŒåŒº
   
-  /* ´´½¨LED_TaskÈÎÎñ */
-  xReturn = xTaskCreate((TaskFunction_t )LED_Task, /* ÈÎÎñÈë¿Úº¯Êı */
-                        (const char*    )"LED_Task",/* ÈÎÎñÃû×Ö */
-                        (uint16_t       )512,   /* ÈÎÎñÕ»´óĞ¡ */
-                        (void*          )NULL,	/* ÈÎÎñÈë¿Úº¯Êı²ÎÊı */
-                        (UBaseType_t    )2,	    /* ÈÎÎñµÄÓÅÏÈ¼¶ */
-                        (TaskHandle_t*  )&LED_Task_Handle);/* ÈÎÎñ¿ØÖÆ¿éÖ¸Õë */
+  /* åˆ›å»ºLED_Taskä»»åŠ¡ */
+  xReturn = xTaskCreate((TaskFunction_t )LED_Task, /* ä»»åŠ¡å…¥å£å‡½æ•° */
+                        (const char*    )"LED_Task",/* ä»»åŠ¡åå­— */
+                        (uint16_t       )512,   /* ä»»åŠ¡æ ˆå¤§å° */
+                        (void*          )NULL,	/* ä»»åŠ¡å…¥å£å‡½æ•°å‚æ•° */
+                        (UBaseType_t    )2,	    /* ä»»åŠ¡çš„ä¼˜å…ˆçº§ */
+                        (TaskHandle_t*  )&LED_Task_Handle);/* ä»»åŠ¡æ§åˆ¶å—æŒ‡é’ˆ */
   if(pdPASS == xReturn)
-    printf("´´½¨LED_TaskÈÎÎñ³É¹¦!\r\n");
+    printf("åˆ›å»ºLED_Taskä»»åŠ¡æˆåŠŸ!\r\n");
   
   
-    /* ´´½¨UART_TaskÈÎÎñ */
-  xReturn = xTaskCreate((TaskFunction_t )UART_Task, /* ÈÎÎñÈë¿Úº¯Êı */
-                        (const char*    )"UART_Task",/* ÈÎÎñÃû×Ö */
-                        (uint16_t       )512,   /* ÈÎÎñÕ»´óĞ¡ */
-                        (void*          )NULL,	/* ÈÎÎñÈë¿Úº¯Êı²ÎÊı */
-                        (UBaseType_t    )2,	    /* ÈÎÎñµÄÓÅÏÈ¼¶ */
-                        (TaskHandle_t*  )&UART_Task_Handle);/* ÈÎÎñ¿ØÖÆ¿éÖ¸Õë */
+    /* åˆ›å»ºUART_Taskä»»åŠ¡ */
+  xReturn = xTaskCreate((TaskFunction_t )UART_Task, /* ä»»åŠ¡å…¥å£å‡½æ•° */
+                        (const char*    )"UART_Task",/* ä»»åŠ¡åå­— */
+                        (uint16_t       )512,   /* ä»»åŠ¡æ ˆå¤§å° */
+                        (void*          )NULL,	/* ä»»åŠ¡å…¥å£å‡½æ•°å‚æ•° */
+                        (UBaseType_t    )2,	    /* ä»»åŠ¡çš„ä¼˜å…ˆçº§ */
+                        (TaskHandle_t*  )&UART_Task_Handle);/* ä»»åŠ¡æ§åˆ¶å—æŒ‡é’ˆ */
   if(pdPASS == xReturn)
-    printf("´´½¨UART_TaskÈÎÎñ³É¹¦!\r\n");
+    printf("åˆ›å»ºUART_Taskä»»åŠ¡æˆåŠŸ!\r\n");
   
-  vTaskDelete(AppTaskCreate_Handle); //É¾³ıAppTaskCreateÈÎÎñ
+  vTaskDelete(AppTaskCreate_Handle); //åˆ é™¤AppTaskCreateä»»åŠ¡
   
-  taskEXIT_CRITICAL();            //ÍË³öÁÙ½çÇø
+  taskEXIT_CRITICAL();            //é€€å‡ºä¸´ç•ŒåŒº
 }
 
 static void LED_Task(void* parameter)
 {	
     while (1)
     {
-        GPIO_SetBits(GPIOA,GPIO_Pin_5);
-        vTaskDelay(1000);   /* ÑÓÊ±500¸ötick */
+        GPIO_SetBits(LED1_GPIO_PORT,LED1_GPIO_PIN);
+        vTaskDelay(1000);   
  
-        GPIO_ResetBits(GPIOA,GPIO_Pin_5);    
-        vTaskDelay(1000);   /* ÑÓÊ±500¸ötick */		 		
+        GPIO_ResetBits(LED1_GPIO_PORT,LED1_GPIO_PIN);    
+        vTaskDelay(1000);  	 		
     }
 }
 
@@ -102,10 +103,10 @@ static void UART_Task(void* parameter)
     while (1)
     {
         printf("right\r\n");
-        vTaskDelay(1000);   /* ÑÓÊ±500¸ötick */
+        vTaskDelay(1000);   
  
         printf("great!\r\n");   
-        vTaskDelay(1000);   /* ÑÓÊ±500¸ötick */		 		
+        vTaskDelay(1000);   	 		
 
     }
 }
